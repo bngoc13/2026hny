@@ -75,142 +75,75 @@ canvas {
 /* ================================
    MOBILE TEXT LAYOUT – REFACTOR
    ================================ */
-@media screen and (max-width: 900px) {
+@media (max-width: 768px) {
 
-  /* Reset nền tảng mobile */
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  /* Khung greeting mobile */
-  .greeting {
-    width: 100vw;
-    height: 100dvh;
+  .greeting-wrapper {
+    position: fixed;
+    inset: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px 12px;
-    box-sizing: border-box;
+    padding: 16px;
   }
 
-  /* RESET TOÀN BỘ CHỮ */
+  .greeting {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #ee4b4b;
+  }
+
   .greeting .m {
     position: relative !important;
     top: auto !important;
     left: auto !important;
-    right: auto !important;
     bottom: auto !important;
-    transform: none !important;
-
+    right: auto !important;
     visibility: visible !important;
-    opacity: 0;
-
-    width: 100%;
-    margin: 6px 0;
-
     text-align: center;
+    width: 100%;
     line-height: 1.2;
-
-    animation: mobileFadeUp 1.1s ease forwards;
-  }
-
-  /* ---- FONT SIZE THEO NHÓM ---- */
-
-  .message-love {
-    font-size: 6vmin !important;
-    animation-delay: 0.3s;
-  }
-
-  .message-masha {
-    font-size: 9.5vmin !important;
-    animation-delay: 1.2s;
-  }
-
-  /* Bigger group */
-  .bigger {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: baseline !important;
-    gap: 6px !important;
-    margin: 10px 0 !important;
-    animation-delay: 2.3s !important;
-  }
-
-  .message-bigger0 { font-size: 4.5vmin !important; }
-  .message-bigger1 { font-size: 6.5vmin !important; }
-  .message-bigger2 { font-size: 11vmin !important; }
-
-  /* Inspiration / thrill */
-  .message-inspiration,
-  .message-thrill {
-    font-size: 3.8vmin !important;
-    letter-spacing: 4px !important;
-    white-space: normal !important;
-    line-height: 1.3;
-    animation-delay: 3.4s;
-  }
-
-  .message-thrill {
-    animation-delay: 4.4s;
-  }
-
-  /* Looking */
-  .message-looking {
-    font-size: 4.5vmin !important;
-    animation-delay: 5.6s;
-  }
-
-  .message-looking span {
-    font-size: 4.3vmin !important;
-  }
-
-  /* Being */
-  .message-being {
-    font-size: 5.2vmin !important;
-    animation-delay: 6.8s;
-  }
-
-  .message-being::before {
-    display: none !important; /* bỏ mask desktop */
-  }
-
-  /* Birthday */
-  .message-birthday {
-    font-size: 9vmin !important;
-    margin-top: 14px;
-    animation-delay: 8.2s;
-  }
-
-  /* Beloved */
-  .message-beloved {
-    font-size: 8vmin !important;
-    animation-delay: 9.4s;
-  }
-
-  /* Signature */
-  .message-eugene {
-    position: absolute !important;
-    bottom: 14px;
-    right: 14px;
-    font-size: 4vmin !important;
-    opacity: 0;
-    animation: mobileFadeUp 1.2s ease forwards;
-    animation-delay: 10.6s;
-  }
-
-  /* ---- MOBILE ANIMATION ---- */
-  @keyframes mobileFadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 }
+@media (max-width: 768px) {
+  .message-love { font-size: 6vmin !important; }
+  .message-masha { font-size: 10vmin !important; }
+
+  .message-bigger0 { font-size: 4vmin !important; }
+  .message-bigger1 { font-size: 5.5vmin !important; }
+  .message-bigger2 { font-size: 9vmin !important; }
+
+  .message-inspiration,
+  .message-thrill {
+    font-size: 3.5vmin !important;
+    letter-spacing: 4px !important;
+    white-space: normal !important;
+  }
+
+  .message-eugene {
+    position: relative !important;
+    font-size: 3.5vmin !important;
+    margin-top: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .greeting .m {
+    animation: mobileFadeUp 0.9s ease forwards;
+  }
+}
+
+@keyframes mobileFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
