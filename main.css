@@ -78,97 +78,94 @@ canvas {
 /* =========================
    MOBILE FIX – TEXT SCALE
    ========================= */
-@media (max-width: 900px) {
-
-  html, body {
-    overflow: hidden;
-  }
-
-  .greeting {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 5vh 4vw;
-  }
-
-  .greeting .m {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    width: 100%;
-    margin: 1.2vh 0;
-  }
-
-  /* FONT SCALE CHUẨN */
-  .message-love {
-    font-size: clamp(22px, 6vw, 36px);
-  }
-
-  .message-masha {
-    font-size: clamp(36px, 10vw, 56px);
-  }
-
-  .bigger {
-    display: flex;
-    justify-content: center;
-    gap: 2vw;
-  }
-
-  .message-bigger0 {
-    font-size: clamp(20px, 5vw, 28px);
-  }
-
-  .message-bigger1 {
-    font-size: clamp(28px, 7vw, 40px);
-  }
-
-  .message-bigger2 {
-    font-size: clamp(42px, 12vw, 64px);
-  }
-
-  .message-day {
-    font-size: clamp(30px, 8vw, 48px);
-  }
-
-  .message-inspiration,
-  .message-thrill {
-    font-size: clamp(14px, 3.5vw, 20px);
-    letter-spacing: 0.4em;
-    white-space: normal;
-  }
-
-  .message-looking {
-    font-size: clamp(18px, 5vw, 26px);
-  }
-
-  .message-looking span {
-    font-size: inherit;
-  }
-
-  .message-being {
-    font-size: clamp(20px, 6vw, 32px);
-  }
-
-  .message-being::before {
-    display: none;
-  }
-
-  .message-birthday,
-  .message-beloved {
-    font-size: clamp(32px, 9vw, 52px);
-  }
-
-  .message-eugene {
-    position: fixed;
-    bottom: 3vh;
-    right: 4vw;
-    font-size: clamp(14px, 4vw, 20px);
-  }
+/* =========================
+   MOBILE MODE – HARD RESET
+   ========================= */
+body.mobile .greeting {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 6vh 5vw;
 }
+
+body.mobile .greeting .m {
+  all: unset;
+  display: block;
+  width: 100%;
+  margin: 1.2vh 0;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.8s forwards;
+}
+
+/* disable ALL transform & scale */
+body.mobile .greeting * {
+  transform: none !important;
+  animation-timing-function: ease !important;
+}
+
+/* FONT SIZE – SMALL & SAFE */
+body.mobile .message-love {
+  font-size: 5vw;
+}
+
+body.mobile .message-masha {
+  font-size: 8vw;
+}
+
+body.mobile .bigger {
+  display: flex;
+  justify-content: center;
+  gap: 2vw;
+}
+
+body.mobile .message-bigger0 {
+  font-size: 4vw;
+}
+
+body.mobile .message-bigger1 {
+  font-size: 6vw;
+}
+
+body.mobile .message-bigger2 {
+  font-size: 8vw;
+}
+
+body.mobile .message-day {
+  font-size: 6vw;
+}
+
+body.mobile .message-inspiration,
+body.mobile .message-thrill {
+  font-size: 3.2vw;
+  letter-spacing: 0.15em;
+  white-space: normal;
+}
+
+body.mobile .message-looking,
+body.mobile .message-being {
+  font-size: 4vw;
+}
+
+body.mobile .message-birthday,
+body.mobile .message-beloved {
+  font-size: 7vw;
+}
+
+body.mobile .message-eugene {
+  position: fixed;
+  bottom: 3vh;
+  right: 4vw;
+  font-size: 3.2vw;
+}
+
+/* simple fade */
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
 
