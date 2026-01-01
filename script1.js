@@ -1,48 +1,56 @@
 const greetingEl = document.querySelector('.greeting');
 const containerEl = document.querySelector('.container');
 
-// Cấu hình âm thanh
+// Cấu hình âm thanh 50%
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
 
-// Không còn chặn window.innerWidth < 1110 nữa
-const btn = document.createElement('div');
-btn.innerHTML = "🔈 Chạm để mở quà";
-btn.style = "position:fixed; bottom:20px; left:20px; color:white; z-index:10000; padding:8px 15px; border:1px solid rgba(255,255,255,0.5); cursor:pointer; background:rgba(0,0,0,0.3); font-size:14px; border-radius:20px;";
-document.body.appendChild(btn);
+// Tạo thông báo yêu cầu xoay ngang điện thoại nếu đang để dọc
+const rotateHint = document.createElement('div');
+rotateHint.id = 'rotate-hint';
+rotateHint.innerHTML = `
+    <div style="text-align:center;">
+        <p style="font-size:20px;">🔄 Vui lòng xoay ngang điện thoại</p>
+        <p style="font-size:14px;">để xem trọn vẹn hiệu ứng</p>
+        <button id="start-btn" style="margin-top:20px; padding:10px 20px; border-radius:20px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer;">Bắt đầu & Bật âm thanh</button>
+    </div>
+`;
+rotateHint.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:#ee4b4b; color:white; z-index:10000; display:flex; align-items:center; justify-content:center; font-family:sans-serif;";
+document.body.appendChild(rotateHint);
 
-btn.onclick = () => {
+document.getElementById('start-btn').onclick = () => {
     explosionSound.play().then(() => {
-        explosionSound.pause();
-        btn.innerHTML = "🔊 Đã sẵn sàng";
-        setTimeout(() => btn.style.display = "none", 2000);
-    }).catch(e => console.log("Audio ready"));
+        explosionSound.pause(); // Kích hoạt quyền audio
+        rotateHint.style.display = "none";
+    });
 };
 
+// Sau 38s thì chuyển sang pháo hoa
 setTimeout(() => {
-    if (greetingEl) greetingEl.remove();
+    if (greetingEl) {
+        greetingEl.style.transition = "opacity 2s";
+        greetingEl.style.opacity = "0";
+        setTimeout(() => greetingEl.remove(), 2000);
+    }
     initMegaFireworks();
 }, 38000);
 
 function initMegaFireworks() {
-    let canvas = document.querySelector('#canvas');
-    if (!canvas) {
-        canvas = document.createElement('canvas');
-        canvas.id = 'canvas';
-        document.body.appendChild(canvas);
-    }
+    let canvas = document.querySelector('#canvas') || document.createElement('canvas');
+    canvas.id = 'canvas';
+    document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     
-    // Tự động điều chỉnh theo kích thước màn hình điện thoại
-    const updateSize = () => {
+    const resize = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', updateSize);
-    updateSize();
+    window.addEventListener('resize', resize);
+    resize();
 
-    canvas.style = "position:fixed; top:0; left:0; z-index:999; background:black; width:100%; height:100%;";
-
+    canvas.style = "position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; background:black;";
+    
+    // Logic pháo hoa giữ nguyên từ bản trước...
     let particles = [];
     let fireworks = [];
 
@@ -75,38 +83,18 @@ function initMegaFireworks() {
         }
     }
 
-    class Particle {
-        constructor(x, y, hue) {
-            this.x = x; this.y = y;
-            this.hue = hue + (Math.random() * 30 - 15);
-            this.alpha = 1;
-            this.decay = Math.random() * 0.015 + 0.005;
-            this.speed = Math.random() * (window.innerWidth < 768 ? 6 : 10) + 2; // Giảm tốc độ tia trên đt để mượt hơn
-            this.angle = Math.random() * Math.PI * 2;
-            this.gravity = 0.4;
-            this.friction = 0.96;
-        }
-        update(index) {
-            this.speed *= this.friction;
-            this.x += Math.cos(this.angle) * this.speed;
-            this.y += Math.sin(this.angle) * this.speed + this.gravity;
-            this.alpha -= this.decay;
-            if (this.alpha <= 0) particles.splice(index, 1);
-        }
-        draw() {
-            ctx.beginPath();
-            ctx.moveTo(this.x, this.y);
-            let len = window.innerWidth < 768 ? 3 : 6;
-            ctx.lineTo(this.x - Math.cos(this.angle) * len, this.y - Math.sin(this.angle) * len);
-            ctx.strokeStyle = `hsla(${this.hue}, 100%, 60%, ${this.alpha})`;
-            ctx.lineWidth = window.innerWidth < 768 ? 2 : 3; 
-            ctx.stroke();
-        }
-    }
-
     function createExplosion(x, y, hue) {
-        let count = window.innerWidth < 768 ? 60 : 120; // Giảm số hạt trên đt để tránh lag
-        for (let i = 0; i < count; i++) particles.push(new Particle(x, y, hue));
+        for (let i = 0; i < 100; i++) {
+            particles.push({
+                x: x, y: y,
+                hue: hue + (Math.random() * 30 - 15),
+                alpha: 1,
+                decay: Math.random() * 0.015 + 0.005,
+                speed: Math.random() * 8 + 2,
+                angle: Math.random() * Math.PI * 2,
+                gravity: 0.3, friction: 0.96
+            });
+        }
     }
 
     function loop() {
@@ -115,8 +103,23 @@ function initMegaFireworks() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'lighter';
-        fireworks.forEach((fw, i) => { fw.draw(); fw.update(i); });
-        particles.forEach((p, i) => { p.draw(); p.update(i); });
+        
+        fireworks.forEach((fw, i) => fw.update(i) || fw.draw());
+        particles.forEach((p, i) => {
+            p.speed *= p.friction;
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed + p.gravity;
+            p.alpha -= p.decay;
+            if (p.alpha <= 0) particles.splice(i, 1);
+            else {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x - Math.cos(p.angle) * 4, p.y - Math.sin(p.angle) * 4);
+                ctx.strokeStyle = `hsla(${p.hue}, 100%, 60%, ${p.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        });
         if (Math.random() < 0.05) fireworks.push(new Firework());
     }
     loop();
