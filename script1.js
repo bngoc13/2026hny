@@ -1,72 +1,122 @@
+/* =========================
+   GLOBAL SETUP
+========================= */
+
 const greetingEl = document.querySelector('.greeting');
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
 
-// 1. Quản lý hiển thị ban đầu
+const isMobile = window.innerWidth < 768;
+
+
+/* =========================
+   1. MOBILE START / ROTATE HINT
+========================= */
+
 function setupDisplay() {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) return;
 
-    if (isMobile) {
-        const rotateHint = document.createElement('div');
-        rotateHint.id = 'rotate-hint';
-        rotateHint.innerHTML = `
-            <div style="text-align:center; padding: 20px;">
-                <p style="font-size:20px; margin-bottom:10px;">🔄 Vui lòng xoay ngang điện thoại</p>
-                <button id="start-btn" style="margin-top:25px; padding:12px 25px; border-radius:30px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer;">Bắt đầu</button>
-            </div>
-        `;
-        rotateHint.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:#ee4b4b; color:white; z-index:10000; display:flex; align-items:center; justify-content:center; font-family:sans-serif;";
-        document.body.appendChild(rotateHint);
+    const overlay = document.createElement('div');
+    overlay.id = 'mobile-start';
 
-        document.getElementById('start-btn').onclick = () => {
-            explosionSound.play().then(() => {
-                explosionSound.pause();
-                rotateHint.style.opacity = '0';
-                setTimeout(() => rotateHint.remove(), 500);
-            });
-        };
-    }
+    overlay.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <p style="font-size:18px; line-height:1.4;">
+                🔄 Xoay ngang để có trải nghiệm đẹp hơn
+            </p>
+            <button id="start-btn"
+                style="
+                    margin-top:20px;
+                    padding:12px 28px;
+                    border-radius:30px;
+                    border:none;
+                    background:#fff;
+                    color:#ee4b4b;
+                    font-weight:bold;
+                    font-size:16px;
+                ">
+                Bắt đầu
+            </button>
+        </div>
+    `;
+
+    Object.assign(overlay.style, {
+        position: 'fixed',
+        inset: 0,
+        background: '#ee4b4b',
+        color: 'white',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'sans-serif'
+    });
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('start-btn').onclick = () => {
+        explosionSound.play().catch(() => {});
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 400);
+    };
 }
 
-// 2. Chuyển sang pháo hoa sau 38s (Thay số này thành 5000 để test nhanh)
+
+/* =========================
+   2. GREETING → FIREWORKS TIMELINE
+========================= */
+
 setTimeout(() => {
     if (greetingEl) {
-        greetingEl.style.transition = "opacity 2s ease";
-        greetingEl.style.opacity = "0";
+        greetingEl.style.transition = 'opacity 1.5s ease';
+        greetingEl.style.opacity = '0';
+
         setTimeout(() => {
             greetingEl.remove();
             initMegaFireworks();
-        }, 2000);
+        }, 1500);
     } else {
         initMegaFireworks();
     }
-}, 38000); 
+}, isMobile ? 20000 : 38000);
 
-// 3. Toàn bộ logic pháo hoa (Được gộp chung vào một khối)
+
+/* =========================
+   3. FIREWORK SYSTEM
+========================= */
+
 function initMegaFireworks() {
-    let canvas = document.querySelector('#canvas') || document.createElement('canvas');
-    canvas.id = 'canvas';
-    if (!canvas.parentElement) document.body.appendChild(canvas);
+    let canvas = document.querySelector('#canvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
+        document.body.appendChild(canvas);
+    }
+
     const ctx = canvas.getContext('2d');
 
-    const resize = () => {
-        if (window.innerHeight > window.innerWidth && window.innerWidth < 900) {
-            canvas.width = window.innerHeight;
-            canvas.height = window.innerWidth;
-        } else {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-    };
+    function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
     window.addEventListener('resize', resize);
     resize();
 
     Object.assign(canvas.style, {
-        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh', zIndex: '1', background: 'black'
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        background: 'black'
     });
 
     let particles = [];
     let fireworks = [];
+
+
+    /* ===== FIREWORK CLASS ===== */
 
     class Firework {
         constructor() {
@@ -78,9 +128,11 @@ function initMegaFireworks() {
             this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
             this.hue = Math.random() * 360;
         }
+
         update(index) {
             this.x += Math.cos(this.angle) * this.speed;
             this.y += Math.sin(this.angle) * this.speed;
+
             if (this.y <= this.ty) {
                 const s = explosionSound.cloneNode();
                 s.volume = 0.5;
@@ -89,52 +141,79 @@ function initMegaFireworks() {
                 fireworks.splice(index, 1);
             }
         }
+
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+            ctx.fillStyle = `hsl(${this.hue},100%,70%)`;
             ctx.fill();
         }
     }
 
+
+    /* ===== EXPLOSION ===== */
+
     function createExplosion(x, y, hue) {
         for (let i = 0; i < 80; i++) {
             particles.push({
-                x: x, y: y,
+                x,
+                y,
                 hue: hue + (Math.random() * 30 - 15),
                 alpha: 1,
                 decay: Math.random() * 0.015 + 0.005,
                 speed: Math.random() * 6 + 2,
                 angle: Math.random() * Math.PI * 2,
-                gravity: 0.2, friction: 0.95
+                gravity: 0.2,
+                friction: 0.95
             });
         }
     }
 
+
+    /* ===== MAIN LOOP ===== */
+
     function loop() {
         requestAnimationFrame(loop);
+
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         ctx.globalCompositeOperation = 'lighter';
-        
-        fireworks.forEach((fw, i) => fw.update(i) || fw.draw());
+
+        fireworks.forEach((fw, i) => {
+            fw.update(i);
+            fw.draw();
+        });
+
         particles.forEach((p, i) => {
             p.speed *= p.friction;
             p.x += Math.cos(p.angle) * p.speed;
             p.y += Math.sin(p.angle) * p.speed + p.gravity;
             p.alpha -= p.decay;
-            if (p.alpha <= 0) particles.splice(i, 1);
-            else {
+
+            if (p.alpha <= 0) {
+                particles.splice(i, 1);
+            } else {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${p.alpha})`;
+                ctx.fillStyle = `hsla(${p.hue},100%,60%,${p.alpha})`;
                 ctx.fill();
             }
         });
-        if (Math.random() < 0.05) fireworks.push(new Firework());
+
+        const spawnRate = isMobile ? 0.03 : 0.06;
+        if (Math.random() < spawnRate) {
+            fireworks.push(new Firework());
+        }
     }
+
     loop();
 }
+
+
+/* =========================
+   INIT
+========================= */
 
 setupDisplay();
