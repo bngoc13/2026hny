@@ -72,85 +72,62 @@ canvas {
 .greeting .message-eugene { font-family: 'RampartOne'; font-size: 60px; bottom: 40px; right: 50px; animation: bigger-appear 3s 34s forwards; }
 
 /* --- TỐI ƯU CHO DI ĐỘNG (Chỉ kích hoạt khi màn hình nhỏ) --- */
-
-   /* --- TỐI ƯU CHO DI ĐỘNG --- */
-@media screen and (max-width: 900px) {
-    /* Ép xoay ngang nếu máy đang để dọc */
-    @media screen and (orientation: portrait) {
-        body {
-            width: 100vh; 
-            height: 100vw;
-            position: fixed;
-            top: 0;
-            left: 100%; /* Đẩy sang phải hết cỡ */
-            transform: rotate(90deg); /* Xoay tại chỗ */
-            transform-origin: 0 0; /* Gốc xoay tại góc trên bên trái */
-            overflow: hidden;
-        }
+@media screen and (max-width: 900px) and (orientation: portrait) {
+    body {
+        width: 100vh;
+        height: 100vw;
+        position: fixed;
+        top: 0;
+        left: 100%;
+        transform: rotate(90deg);
+        transform-origin: 0 0;
+        overflow: hidden;
     }
 
-    /* Khung chứa lời chúc */
     .greeting {
-        width: 100vh !important;
-        height: 100vw !important;
+        width: 100vh !important; /* Chiều ngang thực sau khi xoay */
+        height: 100vw !important; /* Chiều dọc thực sau khi xoay */
         display: flex !important;
         flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
+        justify-content: center !important; /* Căn giữa theo chiều dọc */
+        align-items: center !important;    /* Căn giữa theo chiều ngang */
         padding: 0 !important;
     }
 
-    /* Đưa tất cả các dòng chữ về giữa màn hình */
     .greeting .m {
-        position: relative !important; /* Hủy bỏ absolute để flexbox có tác dụng */
-        left: unset !important;
-        top: unset !important;
-        bottom: unset !important;
-        right: unset !important;
-        margin: 5px 0 !important; /* Tạo khoảng cách giữa các dòng */
+        position: relative !important; /* Hủy bỏ position: absolute của máy tính */
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        margin: 8px 0 !important; /* Tạo khoảng cách đều giữa các dòng */
         text-align: center !important;
-        visibility: visible; /* Đảm bảo chữ hiện ra khi debug */
+        width: 90% !important; /* Đảm bảo không chạm mép màn hình */
     }
 
-    /* Điều chỉnh kích thước chữ cực chuẩn cho Mobile */
+    /* Điều chỉnh kích thước chữ linh hoạt theo màn hình (vmin) */
     .greeting .message-love { font-size: 6vmin !important; }
     .greeting .message-masha { font-size: 10vmin !important; }
     
     .greeting .bigger { 
-        position: relative !important;
-        display: flex !important;
-        flex-direction: row !important;
+        display: flex !important; 
+        flex-direction: row !important; 
+        gap: 10px !important;
         justify-content: center !important;
         align-items: baseline !important;
-        gap: 10px !important;
-        margin: 15px 0 !important;
     }
-    .greeting .message-bigger0 { font-size: 5vmin !important; margin: 0 !important; }
-    .greeting .message-bigger1 { font-size: 7vmin !important; margin: 0 !important; }
-    .greeting .message-bigger2 { font-size: 12vmin !important; margin: 0 !important; }
+    .greeting .message-bigger2 { font-size: 12vmin !important; }
 
-    .greeting .message-day { font-size: 10vmin !important; }
-    
     .greeting .message-inspiration, 
     .greeting .message-thrill { 
         font-size: 4vmin !important; 
-        letter-spacing: 5px !important; 
-        white-space: normal !important; 
-        width: 90% !important;
+        letter-spacing: 2px !important; 
     }
 
-    .greeting .message-looking, 
-    .greeting .message-looking > span { font-size: 5vmin !important; }
-    
-    .greeting .message-being { font-size: 5.5vmin !important; width: 90% !important; }
-    
-    .greeting .message-birthday, 
-    .greeting .message-beloved { font-size: 8vmin !important; }
-    
-    .greeting .message-eugene { 
-        position: absolute !important; /* Dòng cuối cùng giữ absolute để nằm góc */
-        bottom: 20px !important; 
-        right: 20px !important; 
-        font-size: 6vmin !important; 
+    .greeting .message-eugene {
+        position: absolute !important;
+        bottom: 5vmin !important;
+        right: 5vmin !important;
+        font-size: 5vmin !important;
     }
 }
