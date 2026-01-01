@@ -382,3 +382,47 @@ body {
   .greeting .message-love { font-size: 35px !important; }
   .greeting .message-bigger2 { font-size: 60px !important; }
 }
+/* Tối ưu cho mọi thiết bị di động */
+@media screen and (max-width: 900px) {
+    /* Ép xoay ngang nếu máy đang để dọc */
+    @media screen and (orientation: portrait) {
+        body {
+            width: 100vh;
+            height: 100vw;
+            transform: rotate(90deg);
+            transform-origin: top left;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            overflow: hidden;
+        }
+    }
+
+    /* Thu phóng chữ cho vừa khung hình điện thoại */
+    .greeting .message-love { font-size: 28px !important; top: 15vh !important; left: 10vw !important; }
+    .greeting .message-masha { font-size: 45px !important; top: 35vh !important; left: 35vw !important; }
+    
+    .greeting .bigger { bottom: 60px !important; left: 5vw !important; gap: 10px !important; }
+    .greeting .message-bigger0 { font-size: 20px !important; }
+    .greeting .message-bigger1 { font-size: 26px !important; }
+    .greeting .message-bigger2 { font-size: 48px !important; }
+
+    .greeting .message-day { font-size: 40px !important; top: 0 !important; left: 25vw !important; }
+    .greeting .message-inspiration, .greeting .message-thrill { 
+        font-size: 16px !important; 
+        letter-spacing: 12px !important; 
+        left: 5vw !important; 
+    }
+    
+    .greeting .message-looking, .greeting .message-looking > span { font-size: 18px !important; }
+    .greeting .message-being { font-size: 20px !important; left: 10vw !important; width: 80% !important; }
+    .greeting .message-birthday, .greeting .message-beloved { font-size: 38px !important; }
+    .greeting .message-eugene { font-size: 28px !important; right: 20px !important; bottom: 20px !important; }
+}
+
+/* Fix lỗi tràn canvas trên điện thoại */
+canvas {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover;
+}
