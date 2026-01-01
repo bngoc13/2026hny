@@ -61,9 +61,10 @@ setTimeout(() => {
 
 // 4. Hàm Pháo hoa
 function initMegaFireworks() {
-    const resize = () => {
-    // Kiểm tra nếu đang bị xoay ngang cưỡng bức
+   const resize = () => {
+    // Nếu màn hình đang dọc (Portrait) nhưng CSS ép xoay 90 độ (Landscape)
     if (window.innerHeight > window.innerWidth && window.innerWidth < 900) {
+        // Hoán đổi chiều rộng và cao để pháo hoa không bị lệch frame
         canvas.width = window.innerHeight;
         canvas.height = window.innerWidth;
     } else {
@@ -71,19 +72,18 @@ function initMegaFireworks() {
         canvas.height = window.innerHeight;
     }
 };
-    let canvas = document.querySelector('#canvas') || document.createElement('canvas');
-    canvas.id = 'canvas';
-    if (!canvas.parentElement) document.body.appendChild(canvas);
-    
-    const ctx = canvas.getContext('2d');
-    const resize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', resize);
     resize();
 
-    canvas.style = "position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; background:black;";
+  // Sử dụng vw/vh để đảm bảo bao phủ toàn bộ vùng nhìn thấy sau khi xoay
+canvas.style.position = "fixed";
+canvas.style.top = "0";
+canvas.style.left = "0";
+canvas.style.width = "100vw";
+canvas.style.height = "100vh";
+canvas.style.zIndex = "1";
+canvas.style.background = "black";
     
     let particles = [];
     let fireworks = [];
