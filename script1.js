@@ -1,7 +1,9 @@
 /* =========================
    GLOBAL SETUP
 ========================= */
-
+if (window.innerWidth < 900) {
+  document.body.classList.add('mobile');
+}
 const greetingEl = document.querySelector('.greeting');
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
