@@ -1,66 +1,71 @@
 const greetingEl = document.querySelector('.greeting');
-const containerEl = document.querySelector('.container');
 
-// Cấu hình âm thanh 50%
+// 1. Cấu hình âm thanh
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
-// Trong script1.js
-const startBtn = document.getElementById('start-btn');
-const rotateHint = document.getElementById('rotate-hint');
 
-if (startBtn) {
-    startBtn.onclick = () => {
-        // Phát âm thanh mồi để lấy quyền từ trình duyệt
-        explosionSound.play().then(() => {
-            explosionSound.pause(); 
-            rotateHint.style.display = 'none'; // Ẩn thông báo xoay/bắt đầu
-        });
-    };
+// 2. Hàm khởi tạo thông báo (Chỉ hiện trên điện thoại)
+function setupDisplay() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // Tạo thông báo xoay ngang cho điện thoại
+        const rotateHint = document.createElement('div');
+        rotateHint.id = 'rotate-hint';
+        rotateHint.innerHTML = `
+            <div style="text-align:center; padding: 20px;">
+                <p style="font-size:20px; margin-bottom:10px;">🔄 Vui lòng xoay ngang điện thoại</p>
+                <p style="font-size:14px; opacity:0.8;">để xem trọn vẹn hiệu ứng</p>
+                <button id="start-btn" style="margin-top:25px; padding:12px 25px; border-radius:30px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer; font-size:16px; boxShadow: 0 4px 15px rgba(0,0,0,0.2);">Bắt đầu & Bật âm thanh</button>
+            </div>
+        `;
+        rotateHint.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:#ee4b4b; color:white; z-index:10000; display:flex; align-items:center; justify-content:center; font-family:sans-serif;";
+        document.body.appendChild(rotateHint);
+
+        document.getElementById('start-btn').onclick = () => {
+            explosionSound.play().then(() => {
+                explosionSound.pause();
+                rotateHint.style.opacity = '0';
+                setTimeout(() => rotateHint.remove(), 500);
+            }).catch(e => console.log("Audio Error:", e));
+        };
+    } else {
+        // Trên Laptop: Tạo một nút nhỏ kín đáo để kích hoạt âm thanh (Trình duyệt chặn auto-play)
+        const soundBtn = document.createElement('button');
+        soundBtn.innerHTML = "🔈 Bật âm thanh";
+        soundBtn.style = "position:fixed; bottom:20px; right:20px; z-index:10001; padding:10px; border-radius:5px; border:1px solid white; background:rgba(0,0,0,0.5); color:white; cursor:pointer;";
+        document.body.appendChild(soundBtn);
+
+        soundBtn.onclick = () => {
+            explosionSound.play().then(() => {
+                explosionSound.pause();
+                soundBtn.remove();
+            });
+        };
+    }
 }
 
-// Luôn chạy bộ đếm thời gian
-setTimeout(() => {
-    const greeting = document.querySelector('.greeting');
-    if (greeting) greeting.remove();
-    initMegaFireworks(); // Hàm pháo hoa rực rỡ đã viết
-}, 38000);
-
-// Tạo thông báo yêu cầu xoay ngang điện thoại nếu đang để dọc
-const rotateHint = document.createElement('div');
-rotateHint.id = 'rotate-hint';
-rotateHint.innerHTML = `
-    <div style="text-align:center;">
-        <p style="font-size:20px;">🔄 Vui lòng xoay ngang điện thoại</p>
-        <p style="font-size:14px;">để xem trọn vẹn hiệu ứng</p>
-        <button id="start-btn" style="margin-top:20px; padding:10px 20px; border-radius:20px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer;">Bắt đầu & Bật âm thanh</button>
-    </div>
-`;
-rotateHint.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:#ee4b4b; color:white; z-index:10000; display:flex; align-items:center; justify-content:center; font-family:sans-serif;";
-document.body.appendChild(rotateHint);
-
-document.getElementById('start-btn').onclick = () => {
-    explosionSound.play().then(() => {
-        explosionSound.pause(); // Kích hoạt quyền audio
-        rotateHint.style.display = "none";
-    });
-};
-
-// Sau 38s thì chuyển sang pháo hoa
+// 3. Logic chuyển đổi từ Lời chúc sang Pháo hoa (Chạy đúng 1 lần)
 setTimeout(() => {
     if (greetingEl) {
-        greetingEl.style.transition = "opacity 2s";
+        greetingEl.style.transition = "opacity 2s ease";
         greetingEl.style.opacity = "0";
-        setTimeout(() => greetingEl.remove(), 2000);
+        setTimeout(() => {
+            greetingEl.remove();
+            initMegaFireworks();
+        }, 2000);
+    } else {
+        initMegaFireworks();
     }
-    initMegaFireworks();
 }, 38000);
 
+// 4. Hàm Pháo hoa
 function initMegaFireworks() {
     let canvas = document.querySelector('#canvas') || document.createElement('canvas');
     canvas.id = 'canvas';
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
+    if (!canvas.parentElement) document.body.appendChild(canvas);
     
+    const ctx = canvas.getContext('2d');
     const resize = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -70,7 +75,6 @@ function initMegaFireworks() {
 
     canvas.style = "position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; background:black;";
     
-    // Logic pháo hoa giữ nguyên từ bản trước...
     let particles = [];
     let fireworks = [];
 
@@ -104,7 +108,8 @@ function initMegaFireworks() {
     }
 
     function createExplosion(x, y, hue) {
-        for (let i = 0; i < 100; i++) {
+        const count = window.innerWidth < 768 ? 50 : 100;
+        for (let i = 0; i < count; i++) {
             particles.push({
                 x: x, y: y,
                 hue: hue + (Math.random() * 30 - 15),
@@ -144,3 +149,6 @@ function initMegaFireworks() {
     }
     loop();
 }
+
+// Chạy khởi tạo
+setupDisplay();
