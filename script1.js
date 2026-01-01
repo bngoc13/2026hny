@@ -2,6 +2,7 @@ const greetingEl = document.querySelector('.greeting');
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
 
+// 1. Quản lý hiển thị ban đầu
 function setupDisplay() {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -11,7 +12,7 @@ function setupDisplay() {
         rotateHint.innerHTML = `
             <div style="text-align:center; padding: 20px;">
                 <p style="font-size:20px; margin-bottom:10px;">🔄 Vui lòng xoay ngang điện thoại</p>
-                <button id="start-btn" style="margin-top:25px; padding:12px 25px; border-radius:30px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer; font-size:16px;">Bắt đầu & Bật âm thanh</button>
+                <button id="start-btn" style="margin-top:25px; padding:12px 25px; border-radius:30px; border:none; background:#fff; color:#ee4b4b; font-weight:bold; cursor:pointer;">Bắt đầu</button>
             </div>
         `;
         rotateHint.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:#ee4b4b; color:white; z-index:10000; display:flex; align-items:center; justify-content:center; font-family:sans-serif;";
@@ -24,21 +25,10 @@ function setupDisplay() {
                 setTimeout(() => rotateHint.remove(), 500);
             });
         };
-    } else {
-        const soundBtn = document.createElement('button');
-        soundBtn.innerHTML = "🔈 Bật âm thanh";
-        soundBtn.style = "position:fixed; bottom:20px; right:20px; z-index:10001; padding:10px; border-radius:5px; border:1px solid white; background:rgba(0,0,0,0.5); color:white; cursor:pointer;";
-        document.body.appendChild(soundBtn);
-        soundBtn.onclick = () => {
-            explosionSound.play().then(() => {
-                explosionSound.pause();
-                soundBtn.remove();
-            });
-        };
     }
 }
 
-// Chuyển cảnh sau 38s
+// 2. Chuyển sang pháo hoa sau 38s (Thay số này thành 5000 để test nhanh)
 setTimeout(() => {
     if (greetingEl) {
         greetingEl.style.transition = "opacity 2s ease";
@@ -50,8 +40,9 @@ setTimeout(() => {
     } else {
         initMegaFireworks();
     }
-}, 38000);
+}, 38000); 
 
+// 3. Toàn bộ logic pháo hoa (Được gộp chung vào một khối)
 function initMegaFireworks() {
     let canvas = document.querySelector('#canvas') || document.createElement('canvas');
     canvas.id = 'canvas';
@@ -67,7 +58,6 @@ function initMegaFireworks() {
             canvas.height = window.innerHeight;
         }
     };
-
     window.addEventListener('resize', resize);
     resize();
 
@@ -108,14 +98,13 @@ function initMegaFireworks() {
     }
 
     function createExplosion(x, y, hue) {
-        const count = window.innerWidth < 768 ? 50 : 100;
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < 80; i++) {
             particles.push({
                 x: x, y: y,
                 hue: hue + (Math.random() * 30 - 15),
                 alpha: 1,
                 decay: Math.random() * 0.015 + 0.005,
-                speed: Math.random() * 8 + 2,
+                speed: Math.random() * 6 + 2,
                 angle: Math.random() * Math.PI * 2,
                 gravity: 0.2, friction: 0.95
             });
@@ -138,7 +127,7 @@ function initMegaFireworks() {
             if (p.alpha <= 0) particles.splice(i, 1);
             else {
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${p.alpha})`;
                 ctx.fill();
             }
@@ -146,6 +135,6 @@ function initMegaFireworks() {
         if (Math.random() < 0.05) fireworks.push(new Firework());
     }
     loop();
-} // NGOẶC NÀY PHẢI NẰM Ở CUỐI CÙNG
+}
 
 setupDisplay();
