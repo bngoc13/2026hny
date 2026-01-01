@@ -61,6 +61,16 @@ setTimeout(() => {
 
 // 4. Hàm Pháo hoa
 function initMegaFireworks() {
+    const resize = () => {
+    // Kiểm tra nếu đang bị xoay ngang cưỡng bức
+    if (window.innerHeight > window.innerWidth && window.innerWidth < 900) {
+        canvas.width = window.innerHeight;
+        canvas.height = window.innerWidth;
+    } else {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+};
     let canvas = document.querySelector('#canvas') || document.createElement('canvas');
     canvas.id = 'canvas';
     if (!canvas.parentElement) document.body.appendChild(canvas);
