@@ -4,6 +4,26 @@ const containerEl = document.querySelector('.container');
 // Cấu hình âm thanh 50%
 const explosionSound = new Audio('./explosion.mp3');
 explosionSound.volume = 0.5;
+// Trong script1.js
+const startBtn = document.getElementById('start-btn');
+const rotateHint = document.getElementById('rotate-hint');
+
+if (startBtn) {
+    startBtn.onclick = () => {
+        // Phát âm thanh mồi để lấy quyền từ trình duyệt
+        explosionSound.play().then(() => {
+            explosionSound.pause(); 
+            rotateHint.style.display = 'none'; // Ẩn thông báo xoay/bắt đầu
+        });
+    };
+}
+
+// Luôn chạy bộ đếm thời gian
+setTimeout(() => {
+    const greeting = document.querySelector('.greeting');
+    if (greeting) greeting.remove();
+    initMegaFireworks(); // Hàm pháo hoa rực rỡ đã viết
+}, 38000);
 
 // Tạo thông báo yêu cầu xoay ngang điện thoại nếu đang để dọc
 const rotateHint = document.createElement('div');
